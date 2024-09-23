@@ -165,3 +165,151 @@ plt.show()
 
 
 
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
+import matplotlib.dates as mdates
+import datetime
+
+# Step 1: Create sample data
+data = {
+    'Months': pd.to_datetime(['2023-01-01', '2023-02-01', '2023-03-01', '2023-04-01',
+                              '2023-05-01', '2023-06-01', '2023-07-01', '2023-08-01',
+                              '2023-09-01', '2023-10-01', '2023-11-01', '2023-12-01',
+                              '2024-01-01', '2024-02-01', '2024-03-01', '2024-04-01',
+                              '2024-05-01', '2024-06-01', '2024-07-01', '2024-08-01']),
+    'Timings': ['06:52:00', '05:31:00', '05:35:00', '06:10:00', '05:45:00', '06:00:00',
+                '05:08:00', '04:58:00', '05:20:00', '05:15:00', '05:50:00', '06:05:00',
+                '05:30:00', '05:25:00', '05:40:00', '05:35:00', '05:55:00', '05:45:00',
+                '05:08:00', '04:58:00']
+}
+
+df = pd.DataFrame(data)
+
+# Step 2: Ensure 'Timings' is handled as time
+df['Timings'] = pd.to_datetime(df['Timings'], format='%H:%M:%S').dt.time
+
+# Step 3: Convert 'Timings' to seconds from midnight for plotting
+df['Timings_in_seconds'] = df['Timings'].apply(lambda t: t.hour * 3600 + t.minute * 60 + t.second)
+
+# Step 4: Set dynamic start time, end time, and interval
+start_time = datetime.time(3, 0)  # Dynamic start time
+end_time = datetime.time(11, 0)   # Dynamic end time
+interval_minutes = 60  # Dynamic interval in minutes (e.g., 60 minutes = 1 hour)
+
+# Convert times to seconds for y-axis limits
+start_seconds = start_time.hour * 3600 + start_time.minute * 60
+end_seconds = end_time.hour * 3600 + end_time.minute * 60
+
+# Step 5: Create y-ticks dynamically based on the interval
+yticks = list(range(start_seconds, end_seconds + 1, interval_minutes * 60))  # Generate ticks every interval
+yticklabels = [str(datetime.timedelta(seconds=t))[:-3] for t in yticks]  # Format y-tick labels as HH:MM
+
+# Step 6: Plot the data
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Plot the data using 'Months' and 'Timings_in_seconds'
+ax.plot(df['Months'], df['Timings_in_seconds'])
+
+# Step 7: Set the y-axis with dynamic limits and intervals
+ax.set_ylim([start_seconds, end_seconds])  # Set dynamic y-axis range
+ax.set_yticks(yticks)  # Set y-ticks dynamically
+ax.set_yticklabels([datetime.time(t // 3600, (t % 3600) // 60).strftime('%I:%M %p') for t in yticks])  # Set y-tick labels dynamically
+
+# Step 8: Customize x-ticks to show months in the format Jan-23, Feb-23, ...
+ax.xaxis.set_major_locator(mdates.MonthLocator())  # Set major x-ticks for every month
+ax.xaxis.set_major_formatter(DateFormatter('%b-%y'))  # Format x-ticks as Jan-23, Feb-23, etc.
+
+# Rotate x-axis labels to prevent overlapping
+plt.xticks(rotation=45)
+
+# Set axis labels and title
+plt.xlabel('Month')
+plt.ylabel('Time')
+plt.title('Months vs Time with Dynamic Y-Axis')
+
+# Step 9: Show the plot
+plt.tight_layout()
+plt.show()
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
+import matplotlib.dates as mdates
+import datetime
+
+# Step 1: Create sample data
+data = {
+    'Months': pd.to_datetime(['2023-01-01', '2023-02-01', '2023-03-01', '2023-04-01',
+                              '2023-05-01', '2023-06-01', '2023-07-01', '2023-08-01',
+                              '2023-09-01', '2023-10-01', '2023-11-01', '2023-12-01',
+                              '2024-01-01', '2024-02-01', '2024-03-01', '2024-04-01',
+                              '2024-05-01', '2024-06-01', '2024-07-01', '2024-08-01']),
+    'Timings': ['06:52:00', '05:31:00', '05:35:00', '06:10:00', '05:45:00', '06:00:00',
+                '05:08:00', '04:58:00', '05:20:00', '05:15:00', '05:50:00', '06:05:00',
+                '05:30:00', '05:25:00', '05:40:00', '05:35:00', '05:55:00', '05:45:00',
+                '05:08:00', '04:58:00']
+}
+
+df = pd.DataFrame(data)
+
+# Step 2: Ensure 'Timings' is handled as time
+df['Timings'] = pd.to_datetime(df['Timings'], format='%H:%M:%S').dt.time
+
+# Step 3: Convert 'Timings' to seconds from midnight for plotting
+df['Timings_in_seconds'] = df['Timings'].apply(lambda t: t.hour * 3600 + t.minute * 60 + t.second)
+
+# Step 4: Set dynamic start time, end time, and interval for y-axis
+start_time = datetime.time(3, 0)  # Start time
+end_time = datetime.time(11, 0)   # End time
+interval_minutes = 60  # Interval in minutes
+
+# Convert times to seconds for y-axis limits
+start_seconds = start_time.hour * 3600 + start_time.minute * 60
+end_seconds = end_time.hour * 3600 + end_time.minute * 60
+
+# Create y-ticks dynamically based on the interval
+yticks = list(range(start_seconds, end_seconds + 1, interval_minutes * 60))  # Generate ticks every interval
+yticklabels = [datetime.time(t // 3600, (t % 3600) // 60).strftime('%I:%M %p') for t in yticks]  # Format y-tick labels dynamically
+
+# Step 5: Set graph height, width, and x-axis range dynamically
+graph_width = 12  # Width of the graph
+graph_height = 6  # Height of the graph
+start_month = pd.to_datetime('2023-01-01')  # Dynamic start of the x-axis
+end_month = pd.to_datetime('2024-08-01')  # Dynamic end of the x-axis
+x_tick_interval = 2  # Custom x-tick interval (e.g., every 2 months)
+
+# Step 6: Plot the data
+fig, ax = plt.subplots(figsize=(graph_width, graph_height))
+
+# Plot the data using 'Months' and 'Timings_in_seconds'
+ax.plot(df['Months'], df['Timings_in_seconds'])
+
+# Set the y-axis with dynamic limits and intervals
+ax.set_ylim([start_seconds, end_seconds])  # Set dynamic y-axis range
+ax.set_yticks(yticks)  # Set y-ticks dynamically
+ax.set_yticklabels([datetime.time(t // 3600, (t % 3600) // 60).strftime('%I:%M %p') for t in yticks])  # Set y-tick labels dynamically
+
+# Step 7: Customize x-ticks with dynamic intervals
+ax.set_xlim([start_month, end_month])  # Set dynamic x-axis range
+ax.xaxis.set_major_locator(mdates.MonthLocator(interval=x_tick_interval))  # Set custom x-tick interval (every 2 months)
+ax.xaxis.set_major_formatter(DateFormatter('%b-%y'))  # Format x-ticks as Jan-23, Feb-23, etc.
+
+# Rotate x-axis labels to prevent overlapping
+plt.xticks(rotation=45)
+
+# Set axis labels and title
+plt.xlabel('Month')
+plt.ylabel('Time')
+plt.title(f'Months vs Time (Custom Dimensions: {graph_width}x{graph_height})')
+
+# Step 8: Show the plot
+plt.tight_layout()
+plt.show()
+
+
